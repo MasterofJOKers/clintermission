@@ -95,7 +95,8 @@ class CliMenu:
 
     def __init__(self, options=None, header=None, cursor=None, style=None,
                  indent=2, dedent_selection=False, initial_pos=0,
-                 option_prefix=' ', option_suffix='', right_pad_options=False):
+                 option_prefix=' ', option_suffix='', right_pad_options=False,
+                 run_in_thread=False):
         self._items = []
         self._item_num = 0
         self._ran = False
@@ -108,6 +109,7 @@ class CliMenu:
         self._header_indent = indent
         self._dedent_selection = dedent_selection
         self._right_pad_options = right_pad_options
+        self._run_in_thread = run_in_thread
 
         self._cursor = cursor if cursor is not None else self.default_cursor
         self._style = style if style is not None else self.default_style
@@ -361,7 +363,7 @@ class CliMenu:
                               full_screen=False,
                               mouse_support=False)
 
-            app.run()
+            app.run(in_thread=self._run_in_thread)
 
         self._ran = True
 
@@ -455,9 +457,10 @@ class CliMultiMenu(CliMenu):
 
 
 def cli_select_item(options, header=None, abort_exc=ValueError, abort_text="Selection aborted.", style=None,
-                    return_single=True):
+                    return_single=True, run_in_thread=None):
     """Helper function to quickly get a selection with just a few arguments"""
-    menu = CliMenu(header=header, options=options, style=style)
+    menu = CliMenu(header=header, options=options, style=style,
+                   run_in_thread=run_in_thread)
 
     if return_single and menu.num_options == 1:
         item = menu.get_options()[0]
